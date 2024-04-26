@@ -1,0 +1,12 @@
+size=4
+[+] GPU(without Tensor Cores) Elapsed Time: 7094.447266 ms
+Matrix multiplication completed
+size=2
+[+] GPU(without Tensor Cores) Elapsed Time: 7122.111328 ms
+Matrix multiplication completed
+size=2
+[+] GPU(without Tensor Cores) Elapsed Time: 8727.637695 ms
+Matrix multiplication completed
+size=8
+[+] GPU(without Tensor Cores) Elapsed Time: 29416.804688 ms
+Matrix multiplication completed

@@ -5,7 +5,7 @@
 
 #ifdef USE_FP16
      typedef __half Datatype;
-#elif USE_BFLOAT16
+#elif USE_BF16
     typedef __nv_bfloat16 Datatype;
 #elif USE_FP32
     typedef float Datatype;
@@ -18,8 +18,16 @@ __global__ void matrixMultiply(Datatype *A, Datatype *B, Datatype *C, int N) {
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (row < N && col < N) {
-        // Datatype sum = __float2bDatatype(0.0f);
-        Datatype sum = __float2half(0.0f);
+        #ifdef USE_FP16
+            Datatype sum = __float2half(0.0f);
+        #elif USE_BF16
+            Datatype sum = __float2bfloat16(0.0f);
+        #elif USE_FP32
+            Datatype sum = 0.0;
+        #elif USE_FP64
+            Datatype sum = 0.0;
+        #endif  
+        
         for (int k = 0; k < N; ++k) {
             Datatype a = A[row * N + k];
             Datatype b = B[k * N + col];
@@ -38,7 +46,7 @@ int main(int argc, char *argv[]) {
 
     const long N = strtol(argv[1], NULL, 10); 
     size_t bytes = N * N * sizeof(Datatype);
-    printf("size=%lu\n", sizeof(Datatype));
+    printf("size=%lu ", sizeof(Datatype));
 
     // Host matrices
     Datatype *h_A = new Datatype[N * N];
@@ -51,7 +59,7 @@ int main(int argc, char *argv[]) {
         #ifdef USE_FP16
             h_A[i] = __float2half((float)rand() / RAND_MAX); 
             h_B[i] = __float2half((float)rand() / RAND_MAX); 
-        #elif USE_BFLOAT16
+        #elif USE_BF16
             h_A[i] = __float2bfloat16((float)rand() / RAND_MAX); 
             h_B[i] = __float2bfloat16((float)rand() / RAND_MAX); 
         #elif USE_FP32
@@ -108,7 +116,6 @@ int main(int argc, char *argv[]) {
     // std::chrono::duration<double> elapsed_seconds = end - start;
     // std::cout << "Elapsed time: " << elapsed_seconds.count() * 1000 << " milliseconds" << std::endl;
 
-    printf("Matrix multiplication completed\n");
     // Allocate host memory for the result matrix
     Datatype *h_C_result = new Datatype[N * N];
 
