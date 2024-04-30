@@ -27,9 +27,9 @@ __global__ void matrixMultiply(Datatype *A, Datatype *B, Datatype *C, int N) {
 }
 
 template <typename Datatype>
-int runDatatype(int type){
+int runDatatype(int type) {
     
-    const long N = strtol(argv[1], NULL, 10); 
+    const long N = 10000;
     size_t bytes = N * N * sizeof(Datatype);
     printf("size=%lu ", sizeof(Datatype));
 
@@ -41,20 +41,21 @@ int runDatatype(int type){
     // Initialize input matrices A and B
     for (int i = 0; i < N * N; ++i) {
 
-        if type == 1 {
-            h_A[i] = __float2half((float)rand() / RAND_MAX); 
-            h_B[i] = __float2half((float)rand() / RAND_MAX); 
-        } else if type == 2 {
-            h_A[i] = __float2bfloat16((float)rand() / RAND_MAX); 
-            h_B[i] = __float2bfloat16((float)rand() / RAND_MAX); 
-        } else if type == 3 {
+        if (type == 1) {
+            h_A[i] = (__half)((float)rand() / RAND_MAX); 
+            h_B[i] = (__half)((float)rand() / RAND_MAX); 
+        } else if (type == 2) {
+            h_A[i] = (__nv_bfloat16)((float)rand() / RAND_MAX); 
+            h_B[i] = (__nv_bfloat16)((float)rand() / RAND_MAX); 
+        } else if (type == 3) {
             h_A[i] = (float)rand() / RAND_MAX; 
             h_B[i] = (float)rand() / RAND_MAX;
-        } else if type == 3 {
+        } else if (type == 4) {
             h_A[i] = (double)rand() / RAND_MAX; 
             h_B[i] = (double)rand() / RAND_MAX;
         }
     }
+
 
     // Device matrices
     Datatype *d_A, *d_B, *d_C;
