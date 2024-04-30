@@ -3,30 +3,19 @@
 #include "cuda_fp16.h"
 #include "cuda_bf16.h"
 
-#ifdef USE_FP16
-     typedef __half Datatype;
-#elif USE_BF16
-    typedef __nv_bfloat16 Datatype;
-#elif USE_FP32
-    typedef float Datatype;
-#elif USE_FP64
-    typedef double Datatype;
-#endif
+// Precision data types
+typedef __half datatype_fl16;
+typedef __nv_bfloat16 datatype_bf16;
+typedef float datatype_fl32;
+typedef double datatype_fl64;
 
+template <typename Datatype>
 __global__ void matrixMultiply(Datatype *A, Datatype *B, Datatype *C, int N) {
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
     if (row < N && col < N) {
-        #ifdef USE_FP16
-            Datatype sum = __float2half(0.0f);
-        #elif USE_BF16
-            Datatype sum = __float2bfloat16(0.0f);
-        #elif USE_FP32
-            Datatype sum = 0.0;
-        #elif USE_FP64
-            Datatype sum = 0.0;
-        #endif  
+        T sum = static_cast<T>(0);
         
         for (int k = 0; k < N; ++k) {
             Datatype a = A[row * N + k];
@@ -37,13 +26,9 @@ __global__ void matrixMultiply(Datatype *A, Datatype *B, Datatype *C, int N) {
     }
 }
 
-int main(int argc, char *argv[]) {
+template <typename Datatype>
+int runDatatype(int type){
     
-    if (argc != 2) {
-        fprintf(stderr, "Usage: [N]\n");
-        return 1;
-    }
-
     const long N = strtol(argv[1], NULL, 10); 
     size_t bytes = N * N * sizeof(Datatype);
     printf("size=%lu ", sizeof(Datatype));
@@ -56,19 +41,19 @@ int main(int argc, char *argv[]) {
     // Initialize input matrices A and B
     for (int i = 0; i < N * N; ++i) {
 
-        #ifdef USE_FP16
+        if type == 1 {
             h_A[i] = __float2half((float)rand() / RAND_MAX); 
             h_B[i] = __float2half((float)rand() / RAND_MAX); 
-        #elif USE_BF16
+        } else if type == 2 {
             h_A[i] = __float2bfloat16((float)rand() / RAND_MAX); 
             h_B[i] = __float2bfloat16((float)rand() / RAND_MAX); 
-        #elif USE_FP32
+        } else if type == 3 {
             h_A[i] = (float)rand() / RAND_MAX; 
             h_B[i] = (float)rand() / RAND_MAX;
-        #elif USE_FP64
+        } else if type == 3 {
             h_A[i] = (double)rand() / RAND_MAX; 
             h_B[i] = (double)rand() / RAND_MAX;
-        #endif
+        }
     }
 
     // Device matrices
@@ -146,5 +131,20 @@ int main(int argc, char *argv[]) {
     delete[] h_B;
     delete[] h_C;
 
+    return 0;
+}
+
+int main() {
+    //run runDatatype with template datatype
+    printf("------------------------------------\n");
+    printf("Program: Matrix Matrix Mulitplication\n");
+    float time = runDatatype<datatype_fl16>(1);
+    printf("Elapsed time in milliseconds (FP16): %f \n", time);
+    time = runDatatype<datatype_bf16>(2);
+    printf("Elapsed time in milliseconds (BF16): %f \n", time);
+    time = runDatatype<datatype_fl32>(3);
+    printf("Elapsed time in milliseconds (FP32): %f \n", time);
+    time = runDatatype<datatype_fl64>(4);
+    printf("Elapsed time in milliseconds (FP64): %f \n", time);
     return 0;
 }
