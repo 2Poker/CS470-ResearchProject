@@ -132,12 +132,12 @@ int main() {
     //run runDatatype with template datatype
     printf("------------------------------------\n");
     printf("Program: Matrix Matrix Mulitplication\n");
-    // float time = runDatatype<datatype_fl16>(0);
-    // printf("Elapsed time in milliseconds (FP16): %f \n", time);
-    // time = runDatatype<datatype_bf16>(0);
-    // printf("Elapsed time in milliseconds (BF16): %f \n", time);
-    // time = runDatatype<datatype_fl32>(0);
-    // printf("Elapsed time in milliseconds (FP32): %f \n", time);
+    float time = runDatatype<datatype_fl16>(0);
+    printf("Elapsed time in milliseconds (FP16): %f \n", time);
+    time = runDatatype<datatype_bf16>(0);
+    printf("Elapsed time in milliseconds (BF16): %f \n", time);
+    time = runDatatype<datatype_fl32>(0);
+    printf("Elapsed time in milliseconds (FP32): %f \n", time);
     float time = runDatatype<datatype_fl64>(0);
     printf("Elapsed time in milliseconds (FP64): %f \n", time);
     return 0;
