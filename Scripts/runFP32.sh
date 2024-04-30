@@ -1,16 +1,12 @@
 #!/bin/bash
 
-#SBATCH --job-name=MM_DP
-#SBATCH --output=MM_DP.txt
+#SBATCH --job-name=MM_DPFP32
+#SBATCH --output=MM_DPFP32.txt
 #SBATCH --time=1:00:00
 #SBATCH --ntasks=4
 
-cd ..
 
-sizes=(10000 20000 30000 40000)
-files=(./MMFP16 ./MMBF16 ./MMFP32 MMFP64)
-
-for size in "${sizes[@]}"
+for i in 5000 10000 15000 20000 25000;
 do
-    ./MMFP32 $size
+    ./MMFP32 $i
 done

@@ -3,6 +3,7 @@
 #include "cuda_fp16.h"
 #include "cuda_bf16.h"
 
+
 #ifdef USE_FP16
      typedef __half Datatype;
 #elif USE_BF16
@@ -12,6 +13,18 @@
 #elif USE_FP64
     typedef double Datatype;
 #endif
+
+double frobeniusNorm(Datatype* matrix, int N) {
+    double norm = 0.0;
+    for(int i = 0; i < N; ++i) {
+        for(int j = 0; j < N; ++j) {
+            
+            float val = ((float)matrix[i * N + j]); 
+            norm += val * val;
+        }
+    }
+    return sqrt(norm);
+}
 
 __global__ void matrixMultiply(Datatype *A, Datatype *B, Datatype *C, int N) {
     int row = blockIdx.y * blockDim.y + threadIdx.y;
@@ -23,9 +36,9 @@ __global__ void matrixMultiply(Datatype *A, Datatype *B, Datatype *C, int N) {
         #elif USE_BF16
             Datatype sum = __float2bfloat16(0.0f);
         #elif USE_FP32
-            Datatype sum = 0.0;
+            Datatype sum = 0.0f;
         #elif USE_FP64
-            Datatype sum = 0.0;
+            Datatype sum = (double)0.0;
         #endif  
         
         for (int k = 0; k < N; ++k) {
@@ -46,7 +59,7 @@ int main(int argc, char *argv[]) {
 
     const long N = strtol(argv[1], NULL, 10); 
     size_t bytes = N * N * sizeof(Datatype);
-    printf("size=%lu ", sizeof(Datatype));
+    
 
     // Host matrices
     Datatype *h_A = new Datatype[N * N];
@@ -63,11 +76,11 @@ int main(int argc, char *argv[]) {
             h_A[i] = __float2bfloat16((float)rand() / RAND_MAX); 
             h_B[i] = __float2bfloat16((float)rand() / RAND_MAX); 
         #elif USE_FP32
-            h_A[i] = (float)rand() / RAND_MAX; 
-            h_B[i] = (float)rand() / RAND_MAX;
+            h_A[i] = ((float)rand() / RAND_MAX); 
+            h_B[i] = ((float)rand() / RAND_MAX);
         #elif USE_FP64
-            h_A[i] = (double)rand() / RAND_MAX; 
-            h_B[i] = (double)rand() / RAND_MAX;
+            h_A[i] = ((double)rand() / RAND_MAX); 
+            h_B[i] = ((double)rand() / RAND_MAX);
         #endif
     }
 
@@ -87,7 +100,7 @@ int main(int argc, char *argv[]) {
 
     // Perform warm-up to ensure data is in GPU memory
     matrixMultiply<<<numBlocks, threadsPerBlock>>>(d_A, d_B, d_C, N);
-
+    
     // Start the timer
     // auto start = std::chrono::steady_clock::now();
     cudaEvent_t start, stop;
@@ -106,7 +119,7 @@ int main(int argc, char *argv[]) {
     float milliseconds = 0;
     cudaEventElapsedTime(&milliseconds, start, stop);
 
-    printf("[+] GPU(without Tensor Cores) Elapsed Time: %f ms\n", milliseconds);
+    printf("[+] GPU Elapsed Time: %lf s Size: %d N: %d\n", milliseconds / 1000, sizeof(Datatype), N);
 
     // Synchronize to ensure all kernels are finished
     
@@ -121,6 +134,13 @@ int main(int argc, char *argv[]) {
 
     // Copy result matrix from device to host
     cudaMemcpy(h_C_result, d_C, N * N * sizeof(Datatype), cudaMemcpyDeviceToHost);
+
+    
+
+    // Compute the Frobenius norm of the result matrix
+    double result = frobeniusNorm(h_C_result, N);
+
+    printf("Frobenius norm of the result matrix: %lf\n", result);
 
     // Print the result matrix
     // for(int i = 0; i < N; ++i)
