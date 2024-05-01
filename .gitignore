@@ -1,2 +1,6 @@
-MM_DP*.txt
-MM*
+Scripts/MM_DP*.txt
+Scripts/MM*
+Scripts/NN
+Scripts/NN_DP.txt
+Scripts/MV
+Scripts/MV_DP.txt

@@ -27,9 +27,9 @@ __global__ void matVecMultKernel(const T* __restrict__ matrix, const T* __restri
 }
 
 template <typename datatype>
-float runDatatype(){
-    const int rows = 10000;  // Number of rows in the matrix
-    const int cols = 10000;   // Number of columns in the matrix
+float runDatatype(long N){
+    const int rows = N;  // Number of rows in the matrix
+    const int cols = N;   // Number of columns in the matrix
 
     // Allocate host memory
     datatype* h_matrix = new datatype[rows * cols];
@@ -94,17 +94,26 @@ float runDatatype(){
     return milliseconds;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+
+    if (argc != 2) {
+        fprintf(stderr, "Usage: [N]\n");
+        return 1;
+    }
+
+    const long N = strtol(argv[1], NULL, 10); 
+
     //run runDatatype with template datatype_hf
     printf("------------------------------------\n");
     printf("Program: Matrix Vector Mulitplication\n");
-    float time = runDatatype<datatype_fl16>();
+    printf("Matrix Size: %ld x %ld\n", N, N);
+    float time = runDatatype<datatype_fl16>(N);
     printf("Elapsed time in milliseconds (FP16): %f \n", time);
-    time = runDatatype<datatype_bf16>();
+    time = runDatatype<datatype_bf16>(N);
     printf("Elapsed time in milliseconds (BF16): %f \n", time);
-    time = runDatatype<datatype_fl32>();
+    time = runDatatype<datatype_fl32>(N);
     printf("Elapsed time in milliseconds (FP32): %f \n", time);
-    time = runDatatype<datatype_fl64>();
+    time = runDatatype<datatype_fl64>(N);
     printf("Elapsed time in milliseconds (FP64): %f \n", time);
     return 0;
 }

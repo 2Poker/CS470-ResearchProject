@@ -17,8 +17,7 @@
 double frobeniusNorm(Datatype* matrix, int N) {
     double norm = 0.0;
     for(int i = 0; i < N; ++i) {
-        for(int j = 0; j < N; ++j) {
-            
+        for(int j = 0; j < N; ++j) { 
             float val = ((float)matrix[i * N + j]); 
             norm += val * val;
         }

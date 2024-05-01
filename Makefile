@@ -1,5 +1,5 @@
 NFLAGS=-arch=compute_86 -code=sm_86
-TARGETS=Scripts/MMFP16 Scripts/MMBF16 Scripts/MMFP32 Scripts/MMFP64
+TARGETS=Scripts/MMFP16 Scripts/MMBF16 Scripts/MMFP32 Scripts/MMFP64 Scripts/NN Scripts/MV
 
 all: $(TARGETS)
 
@@ -14,6 +14,12 @@ Scripts/MMFP32: MM_Lower_Precisions.cu
 
 Scripts/MMFP64: MM_Lower_Precisions.cu
 	nvcc -DUSE_FP64 $(NFLAGS) -o $@ $< 
+
+Scripts/NN: nn.cu
+	nvcc $(NFLAGS) -o $@ $<
+
+Scripts/MV: mv_mul.cu
+	nvcc $(NFLAGS) -o $@ $<
 
 
 clean: 
