@@ -83,6 +83,16 @@ int main(int argc, char *argv[]) {
         #endif
     }
 
+    #ifdef USE_FP16
+            printf("Using FP16\n");
+    #elif USE_BF16
+        printf("Using BF16\n");
+    #elif USE_FP32
+        printf("Using FP32\n");
+    #elif USE_FP64
+        printf("Using FP64\n");
+    #endif
+
     // Device matrices
     Datatype *d_A, *d_B, *d_C;
     cudaMalloc((void**)&d_A, bytes);
