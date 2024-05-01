@@ -11,7 +11,7 @@ Non-Tensor Programs
 To run the Non-Tensor Programs run Make in the home directory of the repo.
 Then CD into the Scripts folder and run ./lauch.sh
 
-The input sizes for the Matrix Multiply Programs:
+The input sizes for the Matrix Multiply Program:
 - 5000 x 5000
 - 1000 x 10000
 - 15000 x 15000
