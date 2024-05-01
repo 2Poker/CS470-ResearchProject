@@ -48,7 +48,7 @@ float runDatatype(long N){
     // Initialize matrix and vector data with random values
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> dis(-1.0, 1.0);
+    std::uniform_real_distribution<double> dis(-1.0, 1.0);
 
     for (int i = 0; i < rows * cols; ++i) {
         h_matrix[i] = dis(gen);
@@ -96,7 +96,7 @@ float runDatatype(long N){
 
     // Compute the Frobenius norm of the result matrix
     double result = L2Norm(h_C_result, N);
-    printf("Frobenius norm of the result matrix: %lf\n", result);
+    printf("L2 norm of the result vector: %lf\n", result);
 
 
     // Free device memory
