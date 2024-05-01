@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
     }
 
     #ifdef USE_FP16
-            printf("Using FP16\n");
+        printf("Using FP16\n");
     #elif USE_BF16
         printf("Using BF16\n");
     #elif USE_FP32
