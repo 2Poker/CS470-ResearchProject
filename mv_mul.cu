@@ -11,6 +11,8 @@ typedef float datatype_fl32;
 typedef double datatype_fl64;
 cudaEvent_t start, stop;
 
+template <typename T>
+
 
 // Kernel to perform matrix-vector multiplication using tensor cores
 template <typename T>
@@ -24,6 +26,16 @@ __global__ void matVecMultKernel(const T* __restrict__ matrix, const T* __restri
         }
         result[row] = sum;
     }
+}
+
+template <typename datatype>
+double L2Norm(datatype* vector, int N) {
+    double norm = 0.0;
+    for(int i = 0; i < N; ++i) {
+        double val = ((double)matrix[i * N + j]); 
+        norm += val * val;
+    }
+    return sqrt(norm);
 }
 
 template <typename datatype>
@@ -78,8 +90,17 @@ float runDatatype(long N){
     float milliseconds = 0;
     cudaEventElapsedTime(&milliseconds, start, stop);
 
-    // Copy output data from device to host (omitted for brevity)ls
-    // ...
+
+    // Allocate host memory for the result matrix
+    datatype *h_C_result = new datatype[N];
+
+    // Copy result matrix from device to host
+    cudaMemcpy(h_C_result, d_C, N * sizeof(datatype), cudaMemcpyDeviceToHost);
+
+    // Compute the Frobenius norm of the result matrix
+    double result = L2Norm(h_C_result, N);
+    printf("Frobenius norm of the result matrix: %lf\n", result);
+
 
     // Free device memory
     cudaFree(d_matrix);
