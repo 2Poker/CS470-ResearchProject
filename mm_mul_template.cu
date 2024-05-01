@@ -9,17 +9,18 @@ typedef __nv_bfloat16 datatype_bf16;
 typedef float datatype_fl32;
 typedef double datatype_fl64;
 
-template <typename Datatype>
-__global__ void matrixMultiply(Datatype *A, Datatype *B, Datatype *C, int N) {
+template <typename T>
+__global__ void matrixMultiply(T *A, T *B, T *C, int N) {
     int row = blockIdx.y * blockDim.y + threadIdx.y;
     int col = blockIdx.x * blockDim.x + threadIdx.x;
 
+    T sum = static_cast<T>(0);
+
     if (row < N && col < N) {
-        T sum = static_cast<T>(0);
-        
+        sum = 0.0;
         for (int k = 0; k < N; ++k) {
-            Datatype a = A[row * N + k];
-            Datatype b = B[k * N + col];
+            T a = A[row * N + k];
+            T b = B[k * N + col];
             sum += a * b;
         }
         C[row * N + col] = sum;
@@ -27,11 +28,10 @@ __global__ void matrixMultiply(Datatype *A, Datatype *B, Datatype *C, int N) {
 }
 
 template <typename Datatype>
-int runDatatype(int type) {
+float runDatatype(int type) {
     
-    const long N = 10000;
+    const long N = 30000;
     size_t bytes = N * N * sizeof(Datatype);
-    printf("size=%lu ", sizeof(Datatype));
 
     // Host matrices
     Datatype *h_A = new Datatype[N * N];
@@ -42,17 +42,12 @@ int runDatatype(int type) {
     for (int i = 0; i < N * N; ++i) {
 
         if (type == 1) {
-            h_A[i] = (__half)((float)rand() / RAND_MAX); 
-            h_B[i] = (__half)((float)rand() / RAND_MAX); 
-        } else if (type == 2) {
-            h_A[i] = (__nv_bfloat16)((float)rand() / RAND_MAX); 
-            h_B[i] = (__nv_bfloat16)((float)rand() / RAND_MAX); 
-        } else if (type == 3) {
-            h_A[i] = (float)rand() / RAND_MAX; 
-            h_B[i] = (float)rand() / RAND_MAX;
-        } else if (type == 4) {
-            h_A[i] = (double)rand() / RAND_MAX; 
-            h_B[i] = (double)rand() / RAND_MAX;
+            h_A[i] = (Datatype)((double)rand() / RAND_MAX); 
+            h_B[i] = (Datatype)((double)rand() / RAND_MAX); 
+        }
+        else{
+            h_A[i] = (Datatype)((float)rand() / RAND_MAX); 
+            h_B[i] = (Datatype)((float)rand() / RAND_MAX); 
         }
     }
 
@@ -72,7 +67,7 @@ int runDatatype(int type) {
     dim3 numBlocks((N + 15) / 16, (N + 15) / 16);
 
     // Perform warm-up to ensure data is in GPU memory
-    matrixMultiply<<<numBlocks, threadsPerBlock>>>(d_A, d_B, d_C, N);
+    matrixMultiply<Datatype><<<numBlocks, threadsPerBlock>>>(d_A, d_B, d_C, N);
 
     // Start the timer
     // auto start = std::chrono::steady_clock::now();
@@ -91,8 +86,6 @@ int runDatatype(int type) {
 
     float milliseconds = 0;
     cudaEventElapsedTime(&milliseconds, start, stop);
-
-    printf("[+] GPU(without Tensor Cores) Elapsed Time: %f ms\n", milliseconds);
 
     // Synchronize to ensure all kernels are finished
     
@@ -132,20 +125,20 @@ int runDatatype(int type) {
     delete[] h_B;
     delete[] h_C;
 
-    return 0;
+    return milliseconds;
 }
 
 int main() {
     //run runDatatype with template datatype
     printf("------------------------------------\n");
     printf("Program: Matrix Matrix Mulitplication\n");
-    float time = runDatatype<datatype_fl16>(1);
+    float time = runDatatype<datatype_fl16>(0);
     printf("Elapsed time in milliseconds (FP16): %f \n", time);
-    time = runDatatype<datatype_bf16>(2);
+    time = runDatatype<datatype_bf16>(0);
     printf("Elapsed time in milliseconds (BF16): %f \n", time);
-    time = runDatatype<datatype_fl32>(3);
+    time = runDatatype<datatype_fl32>(0);
     printf("Elapsed time in milliseconds (FP32): %f \n", time);
-    time = runDatatype<datatype_fl64>(4);
+    float time = runDatatype<datatype_fl64>(0);
     printf("Elapsed time in milliseconds (FP64): %f \n", time);
     return 0;
 }
