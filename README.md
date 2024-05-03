@@ -3,7 +3,8 @@ Instructions to Run programs
 Non-Tensor Programs
 ===================
 To run the Non-Tensor Programs run Make in the home directory of the repo.
-Then CD into the Scripts folder and run ./lauch.sh
+Then CD into the Scripts folder and run ./lauch.sh this script will run each of these 
+programs and output it to its results to its own respective text file.
 
 The input sizes for the Matrix Multiply Program:
 - 5000 x 5000
@@ -33,7 +34,8 @@ Tensor Program
 ===================
 
 To run the Tensor Core program use the same Makefile inside the home directory of the respository, 
-then CD into the scripts folder and run ./launch.sh
+then CD into the scripts folder and run ./launch.sh this script will run each of these 
+programs and output it to its results to its own respective text file.
 
 There are 3 variables that can be changed inside the file to accomodate different matrix sizes these variables are the M_TILES, N_TILES, K_TILES values. When changed these values must remain a number that is a multiple of 16, otherwise the fragments in the program will not compile correctly.
 
