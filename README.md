@@ -32,18 +32,17 @@ and are as follows:
 Tensor Program
 ===================
 
-To run the Tensor Core program use the same Makefile inside the home directory of the respository, then CD into the scripts folder and run the following command:
+To run the Tensor Core program use the same Makefile inside the home directory of the respository, 
+then CD into the scripts folder and run ./launch.sh
 
-srun --gres=gpu ./TCMM
-
-There are 3 variables that can be changed inside the file to accomodate different matrix sizes these variables are the M_TILES, N_TILES, K_TILES values. When changed these values must remain a number that is a multiple of 16, otherwise the fragments in the program will no compile correctly.
+There are 3 variables that can be changed inside the file to accomodate different matrix sizes these variables are the M_TILES, N_TILES, K_TILES values. When changed these values must remain a number that is a multiple of 16, otherwise the fragments in the program will not compile correctly.
 
 -------------------
 
 Deprecated Programs
 ===================
 
-**This code is outdated but still works the more updated files are the ones listed above**
+**This code is outdated but still works the more updated files are the ones listed above (not included in the automation)**
 
 To run these programs CD into the Deprecated Code Directory then run Make.
 
