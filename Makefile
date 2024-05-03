@@ -1,5 +1,5 @@
 NFLAGS=-arch=compute_86 -code=sm_86
-TARGETS=Scripts/MMFP16 Scripts/MMBF16 Scripts/MMFP32 Scripts/MMFP64 Scripts/NN Scripts/MV
+TARGETS=Scripts/MMFP16 Scripts/MMBF16 Scripts/MMFP32 Scripts/MMFP64 Scripts/NN Scripts/MV Scripts/TCMM
 
 all: $(TARGETS)
 
@@ -21,6 +21,8 @@ Scripts/NN: nn.cu
 Scripts/MV: mv_mul.cu
 	nvcc $(NFLAGS) -o $@ $<
 
+Scripts/TCMM: Tensor_Matrix_Multiplication.cu
+	nvcc $(NFLAGS) -o $@ $<
 
 clean: 
 	rm -f $(TARGETS)
