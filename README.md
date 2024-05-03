@@ -1,11 +1,5 @@
 Instructions to Run programs
 
-
-Deprecated Programs
-===================
-
--------------------
-
 Non-Tensor Programs
 ===================
 To run the Non-Tensor Programs run Make in the home directory of the repo.
@@ -24,12 +18,46 @@ The input sizes for the Matrix Vector Multiply Program:
 - 30000 x 30000
 - 40000 x 40000
 
-The Nueral Network is untrained and uses Static parameters that can be changed. 
+The Nueral Network is untrained and uses Static parameters that can be changed, these variables are in the runDatatype function of the nn.cu program 
+and are as follows:
+- n_inputs       // Number of input channels
+- n_filters     // Number of filters
+- height       // Input height
+- width        // Input width
+- filter_height  // Filter height
+- filter_width   // Filter width
 
 -------------------
 
 Tensor Program
 ===================
+
+To run the Tensor Core program use the same Makefile inside the home directory of the respository, then CD into the scripts folder and run the following command:
+
+srun --gres=gpu ./TCMM
+
+There are 3 variables that can be changed inside the file to accomodate different matrix sizes these variables are the M_TILES, N_TILES, K_TILES values. When changed these values must remain a number that is a multiple of 16, otherwise the fragments in the program will no compile correctly.
+
+-------------------
+
+Deprecated Programs
+===================
+
+**This code is outdated but still works**
+
+To run these programs CD into the Deprecated Code Directory then run Make.
+
+To run the reduction program:
+
+srun --gres=gpu ./reduction
+
+To run the original Non-tensor Matrix Multiply with FP16:
+
+srun --gres=gpu ./MM16
+
+To run the original Non-tensor Matrix Multiply with FP32:
+
+srun --gres=gpu ./MM32
 
 -------------------
 
