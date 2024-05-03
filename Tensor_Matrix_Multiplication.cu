@@ -168,7 +168,7 @@ int main()
 		printf("cudaDeviceReset failed! ");
 		return 1;
 	}
-	// Todo: Add a function to verify the result by using the result of CPU version implementation.
+	
 
 	cudaFree(A);
 	cudaFree(B);
