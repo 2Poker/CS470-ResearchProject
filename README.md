@@ -43,7 +43,7 @@ There are 3 variables that can be changed inside the file to accomodate differen
 Deprecated Programs
 ===================
 
-**This code is outdated but still works**
+**This code is outdated but still works the more updated files are the ones listed above**
 
 To run these programs CD into the Deprecated Code Directory then run Make.
 
